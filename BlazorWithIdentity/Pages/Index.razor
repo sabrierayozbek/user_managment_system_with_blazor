@@ -1,0 +1,34 @@
+﻿@page "/"
+@using BlazorWithIdentityData.Data
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Welcome, <b>@context.User.Identity.Name</b></h3>
+    </Authorized>
+    <NotAuthorized>
+        <h3>You are signed out!</h3>
+    </NotAuthorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="SystemAdministrator">
+    <h3>You are a Administrator</h3>
+</AuthorizeView>
+<AuthorizeView Roles="User">
+    <h3>You are a User</h3>
+</AuthorizeView>
+<AuthorizeView Roles="Moderator, ASPNet, ASPNetCore">
+    <h3>You are a Moderator for ASP.NET and ASP.NET.Core Pages</h3>
+</AuthorizeView>
+<AuthorizeView Roles="Moderator, JavaScript, ReactJS">
+    <h3>You are a Moderator for Javascript and React.JS Pages</h3>
+</AuthorizeView>
+<AuthorizeView Roles="Moderator, Python">
+    <h3>You are a Moderator for Python Page</h3>
+</AuthorizeView>
+<AuthorizeView Roles="Moderator, Java">
+    <h3>You are a Moderator for Java Page</h3>
+</AuthorizeView>
+
+
+<DxDateEdit Date="DateTime.Today"></DxDateEdit>
+

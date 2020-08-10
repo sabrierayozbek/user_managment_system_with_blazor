@@ -1,0 +1,25 @@
+﻿@page "/aspnetcore"
+
+<h1>ASP.NET CORE SAYFASDIR</h1>
+
+
+<AuthorizeView Roles="User">
+    <h3>Bir kullanıcı olarak bu sayfayı sadece okuma yetkiniz vardır.</h3>
+</AuthorizeView>
+<AuthorizeView Roles="Moderator, ASPNet, ASPNetCore">
+    <h3>Bu sayfada moderatör olduğunuz için ekleme silme yetkilerine sahipsiniz.</h3>
+</AuthorizeView>
+<AuthorizeView Roles="Moderator, JavaScript, ReactJS">
+    <h3>JavaScript, ReactJS sayfalarında moderatör olduğunuz için ekleme silme yetkilerine sahip değilsiniz.</h3>
+</AuthorizeView>
+<AuthorizeView Roles="Moderator, Python">
+    <h3>Python sayfasında moderatör olduğunuz için ekleme silme yetkilerine sahip değilsiniz.</h3>
+</AuthorizeView>
+<AuthorizeView Roles="Moderator, Java">
+    <h3>Java sayfasında moderatör olduğunuz için ekleme silme yetkilerine sahip değilsiniz.</h3>
+</AuthorizeView>
+<AuthorizeView>
+    <NotAuthorized>
+        <h3>You are signed out!</h3>
+    </NotAuthorized>
+</AuthorizeView>

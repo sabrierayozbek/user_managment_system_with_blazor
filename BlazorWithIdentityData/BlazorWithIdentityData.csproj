@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Data\Migrations\20200710162922_ExtendRoles.cs" />
+    <Compile Remove="Data\Migrations\20200710162922_ExtendRoles.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200710162953_ExtendRoles.cs" />
+    <Compile Remove="Data\Migrations\20200710162953_ExtendRoles.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200710163017_ExtendRoles.cs" />
+    <Compile Remove="Data\Migrations\20200710163017_ExtendRoles.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200715034415_NewSettingsForIdentityUserRolesTable.cs" />
+    <Compile Remove="Data\Migrations\20200715034415_NewSettingsForIdentityUserRolesTable.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200715041808_IdentityUserRoles.cs" />
+    <Compile Remove="Data\Migrations\20200715041808_IdentityUserRoles.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DevExpress.Blazor" Version="20.1.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
+    <PackageReference Include="Radzen.Blazor" Version="2.10.15" />
+  </ItemGroup>
+
+</Project>

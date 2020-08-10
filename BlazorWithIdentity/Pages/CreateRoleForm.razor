@@ -1,0 +1,43 @@
+﻿@page "/admin/CreateRoleForm"
+@using BlazorWithIdentityData.Data
+@using Microsoft.AspNetCore.Identity
+@inject RoleManager<ApplicationRole> roleManager
+@inject NavigationManager NavigationManager
+
+
+@attribute [Authorize(Roles = "SystemAdministrator")]
+
+<h1 class="bg-info text-white">Create a Role</h1>
+<br />
+<a href="javascript: history.go(-1)" class="btn btn-secondary">Back</a>
+<br />
+<br />
+
+<EditForm Model="role" OnValidSubmit="HandleValidSubmit">
+    <div class="form-group">
+        <label for="roleName">Role Name:</label>
+        <br />
+        <br />
+        <InputText Id="Name" @bind-Value="role.Name" Class="form-control"></InputText>
+        <button type="submit" class="btn btn-dark">Save</button>
+    </div>
+</EditForm>
+
+
+@code {
+
+    ApplicationRole role = new ApplicationRole();
+
+    async void HandleValidSubmit()
+    {
+        role.Id = Guid.NewGuid().ToString();
+        IdentityResult result = await roleManager.CreateAsync(role);
+
+        if (result.Succeeded)
+            NavigationManager.NavigateTo("/admin");
+        else
+            Console.WriteLine(result.Errors.ToList());
+    }
+
+
+}

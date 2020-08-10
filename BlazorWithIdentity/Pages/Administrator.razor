@@ -1,0 +1,194 @@
+﻿@page "/admin"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using BlazorWithIdentityData.Data
+@*@using DevExpress.Blazor*@
+@using Radzen.Blazor
+@using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
+
+@inject UserManager<ApplicationUser> _userManager
+@inject RoleManager<ApplicationRole> _roleManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@*@inject ApplicationUserService ApplicationUserService
+    @inject ApplicationRoleService ApplicationRoleService*@
+@inject ApplicationDbContext dbContext
+@inject NavigationManager NavigationManager
+
+
+@attribute [Authorize(Roles = "SystemAdministrator")]
+
+<h1>Editing Roles Page For Administrator</h1>
+
+<br />
+
+@*<DxDataGrid DataAsync="ApplicationUserService.GetAllUserListAsync" ShowFilterRow="false">
+        <DxDataGridColumn Field="@nameof(ApplicationUser.Id)" Caption="User ID" Width="150px"></DxDataGridColumn>
+        <DxDataGridColumn Field="@nameof(ApplicationUser.Name)" Caption="User Name" Width="150px"></DxDataGridColumn>
+        <DxDataGridColumn Field="@nameof(ApplicationUser.Surname)" Caption="User Surname" Width="150px"></DxDataGridColumn>
+        <DxDataGridColumn Field="@nameof(ApplicationUser.Email)" Caption="User Email" Width="150px"></DxDataGridColumn>
+    </DxDataGrid>
+    <DxDataGridColumn><DxButton RenderStyle="@ButtonRenderStyle.Success" RenderStyleMode="@ButtonRenderStyleMode.Contained" Text="Edit" SizeMode="@SizeMode.Medium" /></DxDataGridColumn>*@
+
+
+<h3>Users List</h3>
+@if (allData == null)
+{
+    <p>Loading....</p>
+}
+else
+{
+    <RadzenGrid @ref="usersGrid" AllowFiltering="true" AllowPaging="true" PageSize="4" AllowSorting="true" Data="@allData" TItem="UserDetails" ColumnWidth="150px" RowUpdate="@OnUpdateRow">
+        <Columns>
+            <RadzenGridColumn TItem="UserDetails" Property="Name" Title="Name">
+                <EditTemplate Context="user">
+                    <RadzenTextBox @bind-Value="user.Name" Style="width:100%; display: block" Name="Name" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="UserDetails" Property="Surname" Title="Surname">
+                <EditTemplate Context="user">
+                    <RadzenTextBox @bind-Value="user.Surname" Style="width:100%; display: block" Name="Surname" />
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="UserDetails" Property="Email" Title="Email">
+                <EditTemplate Context="user">
+                    <RadzenTextBox @bind-Value="user.Email" Style="width:100%; display: block" Name="Email" />
+                </EditTemplate>
+            </RadzenGridColumn>
+              <RadzenGridColumn TItem="UserDetails" Title="Roles Name" TextAlign="TextAlign.Center" Width="100px">
+                <Template Context="role">
+                    <RadzenListBox Disabled="true" @bind-Value="@role.Roles" Name="ss" Data="@role.Roles" 
+                                   TextProperty="RoleName" ValueProperty="RoleId" Style="margin-bottom: 20px;height:200px;" />
+                    <br />
+                </Template>
+                <EditTemplate Context="role">
+                    <RadzenListBox @bind-Value="@role.RoleName" Data="@allRoles" TextProperty="RoleName" ValueProperty="RoleId"
+                    Change="@(args => Change(args, role))" Style="margin-bottom: 20px; height:200px;" />
+                    @*<RadzenDropDown AllowClear="true"  @bind-Value="getSelectedValues" Multiple="true" Placeholder="Select..." Data="@allRoles" TextProperty="RoleName" ValueProperty="RoleId"
+        Change="@(args => Change(args, role))" Style="margin-bottom: 20px; width:400px;" />*@
+                    @*<RadzenDropDownDataGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" AllowClear="true" @bind-Value="selectedItems" Multiple="true" Placeholder="Select..." Data="@allRoles" TextProperty="RoleName" ValueProperty="RoleId"
+                                            Change="@(args => Change(args, role))" Style="margin-bottom: 20px; width:400px;" />*@
+                    @*<RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" @bind-Value="getSelectedValues" Multiple="true" Placeholder="Select..." Data="@allRoles" TextProperty="RoleName" ValueProperty="RoleId"
+                                    Change="@(args => Change(args, role))" Style="margin-bottom: 20px; width:400px;" />*@
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="UserDetails" Context="sampleBlazorModelsForUsers" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="100px">
+                <Template Context="user">
+                    <RadzenButton Icon="edit" Size="ButtonSize.Medium" Click="@(args => EditUser(user))">
+                    </RadzenButton>
+                </Template>
+                <EditTemplate Context="user">
+                    <RadzenButton Icon="save" Size="ButtonSize.Medium" Click="@((args) => SaveUser(user))">
+                    </RadzenButton>
+                    <RadzenButton Icon="cancel" Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Secondary" Click="@((args) => CancelEdit(user))">
+                    </RadzenButton>
+                </EditTemplate>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="UserDetails" Context="user" Bubble="false" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Width="70px">
+                <Template Context="user">
+                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(args => DeleteUser(user))">
+                    </RadzenButton>
+                </Template>
+                <EditTemplate Context="user">
+                    <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small" Click="@(args => DeleteUser(user))">
+                    </RadzenButton>
+                </EditTemplate>
+            </RadzenGridColumn>
+        </Columns>
+    </RadzenGrid>
+
+    <br />
+
+    @*<RadzenButton Icon="edit" Size="ButtonSize.Medium" Click="@(args => Navigate())" Text="Rol Ekle">
+        <label>Rol Ekle</label>
+    </RadzenButton>*@
+}
+
+<br />
+<br />
+
+
+
+
+@code {
+
+
+        List<UserDetails> allData;
+        RadzenGrid<UserDetails> usersGrid;
+        ApplicationUser currentUser;
+
+        object selectedItems;
+        IEnumerable<string> allRoles = new string[] { };
+        object selectedRole;
+        IEnumerable<string> getSelectedItems = new string[] { };
+
+
+    protected override void OnInitialized()
+    {
+
+        allData = _userManager.Users.Select(s => new UserDetails
+        {
+            Name = s.Name,
+            Surname = s.Surname,
+            Email = s.Email,
+            UserId = s.Id,
+            Roles = s.UserRoles.Select(m=>m.Role.Name).ToList()
+        }).ToList();
+
+
+        allRoles = _roleManager.Roles.Select(s => s.Name).ToList();
+    }
+
+
+    void Navigate()
+    {
+        NavigationManager.NavigateTo("/admin/CreateRoleForm");
+    }
+
+
+
+    void EditUser(UserDetails user)
+    {
+        usersGrid.EditRow(user);
+    }
+
+    void SaveUser(UserDetails user)
+    {
+        usersGrid.UpdateRow(user);
+    }
+
+    void CancelEdit(UserDetails role)
+    {
+        usersGrid.CancelEditRow(role);
+    }
+
+    async Task DeleteUser(UserDetails user)
+    {
+        currentUser = await _userManager.FindByIdAsync(user.UserId);
+        await _userManager.DeleteAsync(currentUser);
+        usersGrid.Reload();
+    }
+
+    void Change(object value, UserDetails role)
+    {
+        selectedRole = value;
+        StateHasChanged();
+    }
+
+    async Task OnUpdateRow(UserDetails user)
+    {
+
+        currentUser = await _userManager.FindByIdAsync(user.UserId);
+        await _userManager.AddToRoleAsync(currentUser, (string)selectedRole);
+        bool isInUser = await _userManager.IsInRoleAsync(currentUser, "User");
+        if (isInUser)
+        {
+            await _userManager.RemoveFromRoleAsync(currentUser, "User");
+        }
+        usersGrid.Reload();
+        base.OnInitialized();
+        NavigationManager.NavigateTo("/admin");
+    }
+
+
+}
